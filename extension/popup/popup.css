@@ -4,8 +4,8 @@
   --muted: #5b5b66;
   --button: #f0f0f4;
   --button-hover: #e0e0e6;
-  --accent: #25d1da;
-  --accent-fg: #000000;
+  --accent: #7048e8;
+  --accent-fg: #ffffff;
 }
 @media (prefers-color-scheme: dark) {
   :root {

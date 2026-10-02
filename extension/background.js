@@ -70,6 +70,6 @@ browser.tabs.onUpdated.addListener(refresh, {
 browser.runtime.onInstalled.addListener(injectIntoOpenTabs);
 browser.runtime.onStartup.addListener(refresh);
 
-browser.action.setBadgeBackgroundColor({ color: '#25d1da' });
-browser.action.setBadgeTextColor({ color: '#000000' });
+browser.action.setBadgeBackgroundColor({ color: '#7048e8' });
+browser.action.setBadgeTextColor({ color: '#ffffff' });
 refresh();

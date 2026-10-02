@@ -15,8 +15,8 @@
     }
   },
   "icons": {
-    "48": "icons/note-dark.svg",
-    "96": "icons/note-dark.svg"
+    "48": "icons/icon.svg",
+    "96": "icons/icon.svg"
   },
   "permissions": [
     "tabs",
@@ -45,18 +45,6 @@
     "default_title": "Amazon Music",
     "default_popup": "popup/popup.html",
     "default_area": "navbar",
-    "default_icon": "icons/note-dark.svg",
-    "theme_icons": [
-      {
-        "light": "icons/note-light.svg",
-        "dark": "icons/note-dark.svg",
-        "size": 16
-      },
-      {
-        "light": "icons/note-light.svg",
-        "dark": "icons/note-dark.svg",
-        "size": 32
-      }
-    ]
+    "default_icon": "icons/icon.svg"
   }
 }
