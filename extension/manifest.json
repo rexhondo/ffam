@@ -1,0 +1,62 @@
+{
+  "manifest_version": 3,
+  "name": "Amazon Music Toolbar Controls",
+  "version": "1.0.0",
+  "description": "Play/pause, next and previous controls for Amazon Music (music.amazon.com) in the Firefox toolbar.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "amazon-music-toolbar@ffam.local",
+      "strict_min_version": "140.0",
+      "data_collection_permissions": {
+        "required": [
+          "none"
+        ]
+      }
+    }
+  },
+  "icons": {
+    "48": "icons/note-dark.svg",
+    "96": "icons/note-dark.svg"
+  },
+  "permissions": [
+    "tabs",
+    "scripting"
+  ],
+  "host_permissions": [
+    "*://music.amazon.com/*"
+  ],
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://music.amazon.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_title": "Amazon Music",
+    "default_popup": "popup/popup.html",
+    "default_area": "navbar",
+    "default_icon": "icons/note-dark.svg",
+    "theme_icons": [
+      {
+        "light": "icons/note-light.svg",
+        "dark": "icons/note-dark.svg",
+        "size": 16
+      },
+      {
+        "light": "icons/note-light.svg",
+        "dark": "icons/note-dark.svg",
+        "size": 32
+      }
+    ]
+  }
+}
