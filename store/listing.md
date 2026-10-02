@@ -36,6 +36,10 @@ Music & Tabs (or: Other)
 
 amazon music, music, media controls, toolbar
 
+## Add-on icon
+
+`icon-128.png` (128×128, transparent background). `icon-256.png` is the same icon at double size, if you need it.
+
 ## Screenshots
 
 - `screenshot-light.png` – popup while playing (light theme)
