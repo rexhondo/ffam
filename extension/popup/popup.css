@@ -79,6 +79,10 @@ main {
 }
 .controls svg { width: 18px; height: 18px; fill: currentColor; }
 .controls .primary svg { width: 22px; height: 22px; }
+/* Show pause while playing, play otherwise. */
+#toggle .icon-pause,
+#toggle.playing .icon-play { display: none; }
+#toggle.playing .icon-pause { display: block; }
 
 .link {
   border: 0;

@@ -48,8 +48,8 @@ function render(target) {
     $('art').hidden = true;
   }
 
-  $('icon-play').hidden = Boolean(state.playing);
-  $('icon-pause').hidden = !state.playing;
+  // SVG elements ignore the `hidden` property, so the icon swap is done in CSS.
+  $('toggle').classList.toggle('playing', Boolean(state.playing));
   $('toggle').title = state.playing ? 'Pause' : 'Play';
   $('previous').disabled = !state.canPrevious;
   $('next').disabled = !state.canNext;
