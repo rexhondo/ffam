@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Amazon Music Toolbar Controls",
-  "version": "1.0.0",
-  "description": "Play/pause, next and previous controls for Amazon Music (music.amazon.com) in the Firefox toolbar.",
+  "name": "Toolbar Controls for Amazon Music",
+  "version": "1.1.0",
+  "description": "Play/pause, next and previous controls for the Amazon Music web player in the Firefox toolbar. Not affiliated with or endorsed by Amazon.",
   "browser_specific_settings": {
     "gecko": {
       "id": "amazon-music-toolbar@ffam.local",
@@ -19,21 +19,43 @@
     "96": "icons/icon.svg"
   },
   "permissions": [
-    "tabs",
     "scripting"
   ],
   "host_permissions": [
-    "*://music.amazon.com/*"
+    "*://music.amazon.com/*",
+    "*://music.amazon.co.uk/*",
+    "*://music.amazon.de/*",
+    "*://music.amazon.fr/*",
+    "*://music.amazon.it/*",
+    "*://music.amazon.es/*",
+    "*://music.amazon.ca/*",
+    "*://music.amazon.com.au/*",
+    "*://music.amazon.co.jp/*",
+    "*://music.amazon.in/*",
+    "*://music.amazon.com.br/*",
+    "*://music.amazon.com.mx/*"
   ],
   "background": {
     "scripts": [
+      "shared.js",
       "background.js"
     ]
   },
   "content_scripts": [
     {
       "matches": [
-        "*://music.amazon.com/*"
+        "*://music.amazon.com/*",
+        "*://music.amazon.co.uk/*",
+        "*://music.amazon.de/*",
+        "*://music.amazon.fr/*",
+        "*://music.amazon.it/*",
+        "*://music.amazon.es/*",
+        "*://music.amazon.ca/*",
+        "*://music.amazon.com.au/*",
+        "*://music.amazon.co.jp/*",
+        "*://music.amazon.in/*",
+        "*://music.amazon.com.br/*",
+        "*://music.amazon.com.mx/*"
       ],
       "js": [
         "content.js"
@@ -42,7 +64,7 @@
     }
   ],
   "action": {
-    "default_title": "Amazon Music",
+    "default_title": "Toolbar Controls for Amazon Music",
     "default_popup": "popup/popup.html",
     "default_area": "navbar",
     "default_icon": "icons/icon.svg"

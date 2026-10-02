@@ -1,12 +1,6 @@
 // Keeps the toolbar button in sync with Amazon Music: greyed out when nothing
 // is loaded, enabled when a track is loaded, and badged while music is playing.
 
-const AMAZON_MUSIC_URLS = ['*://music.amazon.com/*'];
-
-async function amazonMusicTabs() {
-  return browser.tabs.query({ url: AMAZON_MUSIC_URLS });
-}
-
 async function tabState(tab) {
   try {
     const state = await browser.tabs.sendMessage(tab.id, { type: 'getState' });
@@ -30,6 +24,14 @@ async function refresh() {
   const states = (await Promise.all(tabs.map(tabState))).filter(Boolean);
   const playing = states.find((s) => s.playing);
   const loaded = playing || states.find((s) => s.hasTrack);
+
+  if (!loaded && (await hasNoSiteAccess())) {
+    // Keep the button clickable so the popup can offer to restore access.
+    await browser.action.enable();
+    await browser.action.setBadgeText({ text: '!' });
+    await browser.action.setTitle({ title: 'Toolbar Controls for Amazon Music – click to allow access' });
+    return;
+  }
 
   if (!loaded) {
     await browser.action.disable();
@@ -68,6 +70,9 @@ browser.tabs.onUpdated.addListener(refresh, {
 });
 
 browser.runtime.onInstalled.addListener(injectIntoOpenTabs);
+// Access switched back on: start working in the Amazon Music tabs already open.
+browser.permissions.onAdded.addListener(() => injectIntoOpenTabs().then(refresh));
+browser.permissions.onRemoved.addListener(refresh);
 browser.runtime.onStartup.addListener(refresh);
 
 browser.action.setBadgeBackgroundColor({ color: '#7048e8' });

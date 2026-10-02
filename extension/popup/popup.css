@@ -17,6 +17,9 @@
   }
 }
 
+/* Author display rules (e.g. main's flex) would otherwise override [hidden]. */
+[hidden] { display: none !important; }
+
 body {
   margin: 0;
   width: 260px;
@@ -99,4 +102,15 @@ main {
   padding: 16px;
   text-align: center;
   color: var(--muted);
+}
+
+#no-access p { margin: 0 0 10px; }
+.grant {
+  padding: 6px 14px;
+  border: 0;
+  border-radius: 4px;
+  background: var(--accent);
+  color: var(--accent-fg);
+  font: inherit;
+  cursor: pointer;
 }
