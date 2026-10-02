@@ -25,6 +25,25 @@ cd ffam
 
 The extension itself is in the `extension\` folder.
 
+## Tools for the `npx web-ext` commands
+
+The `npx web-ext …` commands below (run, lint, build, sign) need **Node.js**.
+Loading the extension in Firefox and uploading it to addons.mozilla.org don't.
+
+1. Install the LTS version of Node.js from https://nodejs.org, or run
+   `winget install OpenJS.NodeJS.LTS` in PowerShell.
+2. Close and reopen PowerShell so it picks up `npx`, then check with `npx --version`.
+
+If PowerShell then says *"npx.ps1 cannot be loaded because running scripts is
+disabled on this system"*, either type `npx.cmd` instead of `npx`, or allow
+local scripts once with:
+
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+```
+
+The first `npx web-ext` command asks to download web-ext; answer `y`.
+
 ## Try it (temporary install)
 
 1. Open `about:debugging#/runtime/this-firefox` in Firefox.
@@ -35,7 +54,7 @@ The extension itself is in the `extension\` folder.
 
 Temporary add-ons are removed when Firefox restarts.
 
-Or, with Node.js installed, launch a fresh Firefox profile that has the extension loaded:
+Or launch a fresh Firefox profile that has the extension loaded:
 
 ```powershell
 npx web-ext run -s extension
