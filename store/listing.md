@@ -99,9 +99,10 @@ data), then tick all three certifications:
 - I do not use or transfer user data for purposes that are unrelated to my item's single purpose
 - I do not use or transfer user data to determine creditworthiness or for lending purposes
 
-**Privacy policy URL:** not required, because no user data is collected. Leave
-it blank unless the form insists, in which case use the README's Permissions
-section: https://github.com/rexhondo/ffam#how-it-works
+**Privacy policy URL:** the public address of `PRIVACY.md` (in the repo root).
+The repository is private, so either make it public and use
+https://github.com/rexhondo/ffam/blob/HEAD/PRIVACY.md, or paste the policy into
+a public GitHub Gist and use the Gist's address.
 
 ## Distribution tab
 

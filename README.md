@@ -162,6 +162,10 @@ find the play/pause/next/previous buttons are in the `SELECTORS` block at the
 top of `extension/content.js`. Inspect the button in the player bar
 (right-click → Inspect) and add a matching selector there.
 
+## Privacy
+
+The extension collects no data. See [PRIVACY.md](PRIVACY.md).
+
 ## License
 
 [MIT](LICENSE)
