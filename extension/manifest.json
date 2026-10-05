@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Toolbar Controls for Amazon Music",
-  "version": "1.1.0",
-  "description": "Play/pause, next and previous controls for the Amazon Music web player in the Firefox toolbar. Not affiliated with or endorsed by Amazon.",
+  "version": "1.2.0",
+  "description": "Play/pause, next and previous for the Amazon Music web player, in your toolbar. Not affiliated with or endorsed by Amazon.",
   "browser_specific_settings": {
     "gecko": {
       "id": "amazon-music-toolbar@ffam.local",
@@ -14,9 +14,11 @@
       }
     }
   },
+  "minimum_chrome_version": "121",
   "icons": {
-    "48": "icons/icon.svg",
-    "96": "icons/icon.svg"
+    "48": "icons/icon-48.png",
+    "96": "icons/icon-96.png",
+    "128": "icons/icon-128.png"
   },
   "permissions": [
     "scripting"
@@ -39,7 +41,8 @@
     "scripts": [
       "shared.js",
       "background.js"
-    ]
+    ],
+    "service_worker": "service-worker.js"
   },
   "content_scripts": [
     {
@@ -67,6 +70,9 @@
     "default_title": "Toolbar Controls for Amazon Music",
     "default_popup": "popup/popup.html",
     "default_area": "navbar",
-    "default_icon": "icons/icon.svg"
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png"
+    }
   }
 }

@@ -1,7 +1,9 @@
-# Toolbar Controls for Amazon Music (Firefox)
+# Toolbar Controls for Amazon Music (Firefox and Chrome)
 
-A small Firefox extension that puts Amazon Music media controls in the toolbar
-(right side, next to the other extension buttons).
+A small browser extension that puts Amazon Music media controls in the toolbar
+(right side, next to the other extension buttons). The same `extension` folder
+works in Firefox and in Chrome (and Chrome-based browsers such as Edge, Brave
+and Opera), with no build step.
 
 - The toolbar button is **greyed out** until an Amazon Music tab has a track loaded.
 - While music is **playing**, the button shows a ▶ badge, and hovering it
@@ -10,7 +12,8 @@ A small Firefox extension that puts Amazon Music media controls in the toolbar
   ⏮ previous, ⏯ play/pause, ⏭ next, and a link that jumps to the Amazon Music tab.
 
 Works on music.amazon.com and the regional sites: .co.uk, .de, .fr, .it, .es,
-.ca, .com.au, .co.jp, .in, .com.br and .com.mx. Requires Firefox 140 or newer.
+.ca, .com.au, .co.jp, .in, .com.br and .com.mx. Requires Firefox 140 or newer,
+or Chrome 121 or newer.
 
 *Not affiliated with, endorsed by, or sponsored by Amazon. Amazon Music is a
 trademark of Amazon.com, Inc. or its affiliates.*
@@ -28,7 +31,7 @@ The extension itself is in the `extension\` folder.
 ## Tools for the `npx web-ext` commands
 
 The `npx web-ext …` commands below (run, lint, build, sign) need **Node.js**.
-Loading the extension in Firefox and uploading it to addons.mozilla.org don't.
+Loading the extension in a browser and uploading it to the stores don't.
 
 1. Install the LTS version of Node.js from https://nodejs.org, or run
    `winget install OpenJS.NodeJS.LTS` in PowerShell.
@@ -44,7 +47,7 @@ Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
 
 The first `npx web-ext` command asks to download web-ext; answer `y`.
 
-## Try it (temporary install)
+## Try it in Firefox (temporary install)
 
 1. Open `about:debugging#/runtime/this-firefox` in Firefox.
 2. Click **Load Temporary Add-on…** and pick `C:\dev\projects\ffam\extension\manifest.json`.
@@ -60,7 +63,23 @@ Or launch a fresh Firefox profile that has the extension loaded:
 npx web-ext run -s extension
 ```
 
-## Install permanently (just for you)
+## Try it in Chrome
+
+1. Open `chrome://extensions` and switch on **Developer mode** (top right).
+2. Click **Load unpacked** and pick the `C:\dev\projects\ffam\extension` folder.
+3. Click the puzzle-piece icon in the toolbar and pin **Toolbar Controls for
+   Amazon Music**. (Chrome always puts new extensions in that menu; extensions
+   can't pin themselves.)
+4. Open https://music.amazon.com and play something.
+
+An unpacked extension stays installed across restarts. After pulling changes,
+click the reload arrow on its card in `chrome://extensions`.
+
+If Chrome ever shows a warning about `browser_specific_settings` or
+`background.scripts`, you can ignore it: those parts of the manifest are for
+Firefox, and Chrome skips them.
+
+## Install permanently in Firefox (just for you)
 
 Release Firefox only installs signed extensions. You can sign it privately
 ("unlisted") for free:
@@ -85,14 +104,39 @@ Release Firefox only installs signed extensions. You can sign it privately
 The add-on ID (`browser_specific_settings.gecko.id` in the manifest) is
 permanent once it's uploaded, so don't change it afterwards.
 
+## Publish on the Chrome Web Store
+
+1. Register as a Chrome Web Store developer at
+   https://chrome.google.com/webstore/devconsole (one-time US$5 fee).
+2. Create the zip the same way as for Firefox: `npx web-ext build -s extension`.
+   The same zip works for both stores.
+3. In the developer console, click **New item** and upload the zip.
+4. Fill in the **Store listing** and **Privacy** tabs from the "Chrome Web
+   Store" section of [`store/listing.md`](store/listing.md). Use
+   `store/chrome-icon-128.png` as the store icon and `store/promo-tile-440x280.png`
+   as the small promo tile.
+5. Submit for review.
+
+Microsoft Edge has its own free store, Edge Add-ons
+(https://partner.microsoft.com/dashboard/microsoftedge/), which accepts the
+same zip.
+
+## Releasing an update
+
+Firefox and Chrome share all the code, so bump `version` in the manifest once,
+build one zip, and upload it to both stores.
+
 ## How it works
 
 | File | Role |
 |------|------|
 | `extension/content.js` | Runs in Amazon Music tabs. Reads the track from the page's Media Session metadata and works out whether music is playing. To control playback, it clicks the web player's own buttons in the bottom player bar. |
 | `extension/background.js` | Enables or disables the toolbar button and updates its badge and tooltip when tabs change or playback changes. |
-| `extension/shared.js` | The Amazon Music tab lookup and site-access check, shared by the background script and the popup. |
+| `extension/service-worker.js` | Chrome only: Chrome runs the background as a service worker, and this file loads `shared.js` and `background.js` into it. Firefox ignores it. |
+| `extension/shared.js` | Makes the `browser` API name available in Chrome (which calls it `chrome`), plus the Amazon Music tab lookup and site-access check shared by the background script and the popup. |
 | `extension/popup/` | The controls panel shown when you click the toolbar button. |
+| `extension/icons/` | Toolbar and extension icons (PNG, because Chrome doesn't accept SVG icons). |
+| `art/icon.svg` | The icon's source artwork. The PNGs in `extension/icons/` and `store/` are rendered from it. |
 
 If you have several Amazon Music tabs, the extension controls the one that is
 playing (or the most recently used one).
@@ -101,8 +145,9 @@ playing (or the most recently used one).
 the player's buttons) and `scripting` (to start working in Amazon Music tabs
 that were already open when the extension was installed). The extension
 collects no data and makes no network requests of its own. If you switch off
-its site access in `about:addons`, the toolbar button shows a "!" badge and the
-popup offers an **Allow access** button.
+its site access (in Firefox's `about:addons`, or Chrome's "Site access"
+setting), the toolbar button shows a "!" badge and the popup offers an
+**Allow access** button.
 
 ## Adding another Amazon Music site
 

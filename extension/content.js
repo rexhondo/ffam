@@ -1,8 +1,24 @@
 // Runs inside music.amazon.com tabs. Reads what's playing and drives the
 // web player's own transport buttons when the popup asks it to.
 (() => {
-  if (window.__ffamContentLoaded) return;
-  window.__ffamContentLoaded = true;
+  // Firefox calls the extension API `browser`, Chrome calls it `chrome`.
+  // Kept local on purpose: content scripts from an old and a new copy of the
+  // extension can share globals in Chrome (see alive() below).
+  const api = globalThis.browser || globalThis.chrome;
+
+  // False once this copy of the script has been orphaned, which happens in
+  // Chrome when the extension is updated or reloaded while the tab stays open.
+  const alive = () => {
+    try {
+      return Boolean(api.runtime && api.runtime.id);
+    } catch (_) {
+      return false;
+    }
+  };
+
+  // Don't run twice in the same page, unless the earlier copy is orphaned.
+  if (window.__ffamAlive && window.__ffamAlive()) return;
+  window.__ffamAlive = alive;
 
   // Amazon changes its markup from time to time. If a control stops working,
   // this is the only block that should need updating. Each list is tried in order.
@@ -31,13 +47,22 @@
     ],
   };
 
-  // Amazon Music is built from web components, so walk into shadow roots too.
-  // openOrClosedShadowRoot is a Firefox content-script-only API.
+  // Amazon Music is built from web components, so walk into shadow roots too,
+  // including closed ones. Firefox exposes those to content scripts as
+  // el.openOrClosedShadowRoot; Chrome has chrome.dom.openOrClosedShadowRoot().
+  function shadowOf(el) {
+    if ('openOrClosedShadowRoot' in el) return el.openOrClosedShadowRoot;
+    if (el.shadowRoot) return el.shadowRoot;
+    // Only custom elements (tag names with a dash) can have closed roots here.
+    if (api.dom && el.localName.includes('-')) return api.dom.openOrClosedShadowRoot(el);
+    return null;
+  }
+
   function allRoots() {
     const roots = [document];
     for (let i = 0; i < roots.length; i++) {
       for (const el of roots[i].querySelectorAll('*')) {
-        const shadow = el.openOrClosedShadowRoot || el.shadowRoot;
+        const shadow = shadowOf(el);
         if (shadow) roots.push(shadow);
       }
     }
@@ -76,7 +101,7 @@
   function press(el) {
     // Clicking the real <button> inside a custom element is what the page's
     // own handlers listen for; the click still bubbles out to the host.
-    const shadow = el.openOrClosedShadowRoot || el.shadowRoot;
+    const shadow = shadowOf(el);
     const inner = shadow && shadow.querySelector('button, [role="button"]');
     (inner || el).click();
   }
@@ -160,7 +185,15 @@
   // toolbar button. Polling once a second is cheap and survives Amazon's
   // re-renders far better than trying to observe specific elements.
   let lastSent = '';
+  let timer = null;
   function report() {
+    if (!alive()) {
+      // Orphaned: a newer copy of the script has taken over (or will), so stop.
+      clearInterval(timer);
+      document.removeEventListener('play', report, true);
+      document.removeEventListener('pause', report, true);
+      return;
+    }
     let state;
     try {
       state = getState();
@@ -170,22 +203,25 @@
     const key = JSON.stringify(state);
     if (key === lastSent) return;
     lastSent = key;
-    browser.runtime.sendMessage({ type: 'state', state }).catch(() => {});
+    // Nobody may be listening (e.g. Chrome's background worker is asleep and
+    // wakes for the message without replying), so ignore delivery errors.
+    Promise.resolve(api.runtime.sendMessage({ type: 'state', state })).catch(() => {});
   }
 
-  browser.runtime.onMessage.addListener((msg) => {
-    if (!msg) return undefined;
-    if (msg.type === 'getState') return Promise.resolve(getState());
-    if (msg.type === 'command') {
-      const ok = runCommand(msg.command);
+  // Replying through sendResponse (rather than returning a Promise) works in
+  // both Firefox and Chrome.
+  api.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
+    if (!msg) return;
+    if (msg.type === 'getState') {
+      sendResponse(getState());
+    } else if (msg.type === 'command') {
+      sendResponse({ ok: runCommand(msg.command) });
       setTimeout(report, 300);
-      return Promise.resolve({ ok });
     }
-    return undefined;
   });
 
   document.addEventListener('play', report, true);
   document.addEventListener('pause', report, true);
-  setInterval(report, 1000);
+  timer = setInterval(report, 1000);
   report();
 })();

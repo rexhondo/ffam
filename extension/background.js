@@ -65,8 +65,10 @@ browser.runtime.onMessage.addListener((msg) => {
 });
 
 browser.tabs.onRemoved.addListener(refresh);
-browser.tabs.onUpdated.addListener(refresh, {
-  properties: ['audible', 'status', 'url'],
+// Chrome doesn't support Firefox's event filter argument here, so check the
+// interesting changes by hand.
+browser.tabs.onUpdated.addListener((_tabId, changeInfo) => {
+  if ('audible' in changeInfo || changeInfo.status || changeInfo.url) refresh();
 });
 
 browser.runtime.onInstalled.addListener(injectIntoOpenTabs);
